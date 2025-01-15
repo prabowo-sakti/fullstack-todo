@@ -1,0 +1,41 @@
+{
+  "name": "belajar-nodejs-dengan-docker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "standard": {
+    "env": [
+      "jest"
+    ],
+    "ignore": [
+      "public/*.js"
+    ]
+  },
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "mongoose": "~8.9.4"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.26.0",
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "standard": "^17.1.2",
+    "supertest": "^7.0.0"
+  },
+  "scripts": {
+    "start": "nodemon --require dotenv/config index.mjs",
+    "test": "jest --verbose",
+    "test:coverage": "jest --coverage",
+    "lint": "standard",
+    "lint:fix": "standard --fix",
+    "infra:start": "docker compose up -d --build",
+    "infra:stop": "docker compose down --remove-orphans"
+  }
+}
