@@ -15,6 +15,10 @@ app.use(express.static("public"));
 app.use(bodyParser.json());
 app.set("view engine", "ejs");
 
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
 app.get("/about", async (req, res) => {
   const whispers = await getAll();
 

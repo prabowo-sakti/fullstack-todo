@@ -15,12 +15,15 @@
     ]
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
-    "mongoose": "~8.9.4"
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "~8.9.4",
+    "validator": "^13.12.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.26.0",
@@ -37,5 +40,6 @@
     "lint:fix": "standard --fix",
     "infra:start": "docker compose up -d --build",
     "infra:stop": "docker compose down --remove-orphans"
-  }
+  },
+  "packageManager": "pnpm@9.12.3+sha512.cce0f9de9c5a7c95bef944169cc5dfe8741abfb145078c0d508b868056848a87c81e626246cb60967cbd7fd29a6c062ef73ff840d96b3c86c40ac92cf4a813ee"
 }

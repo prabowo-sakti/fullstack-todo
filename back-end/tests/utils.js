@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config();
 import { Whisper } from "../database.mjs";
 
 const ensureDbConnection = async () => {
