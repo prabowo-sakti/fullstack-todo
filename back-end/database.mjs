@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import validator from "validator";
 import bcrypt from "bcrypt";
-import { checkPasswordStreng } from "./utils";
+import { checkPasswordStreng } from "./utils.js";
 
 mongoose.set("toJSON", {
   virtuals: true,
@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
     minlength: [8, "Pasword must be at least 8 characters long"],
     validate: {
       validator: checkPasswordStreng,
-      prop
+      prop,
     },
   },
 });

@@ -1,14 +1,16 @@
-version: "3.8"
-
 services:
   database:
     container_name: whispering-database
-    image: mongo:7.0
+    image: mongo:latest
     ports:
       - "27017:27017"
-
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - db-storage:/data/db
+      - ./mongod.conf:/etc/mongo/mongod.conf
+    command: ["mongod", "--config", "/etc/mongo/mongod.conf"]
 
 volumes:
   db-storage:
