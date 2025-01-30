@@ -27,14 +27,48 @@ const userSchema = new mongoose.Schema({
     minlength: [8, "Pasword must be at least 8 characters long"],
     validate: {
       validator: checkPasswordStreng,
-      prop,
+    },
+  },
+
+  emai: {
+    type: String,
+    unique: true,
+    trim: true,
+    lowercase: true,
+    select: false,
+    required: [true, "Email is required"],
+
+    validate: {
+      validator: validator.isEmail,
+      message: "Email is not valid",
     },
   },
 });
 
 const whisperSchema = new mongoose.Schema({
+  author: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   message: String,
-  completed: Boolean,
+  updatedDate: {
+    type: Date,
+    default: Date.now,
+  },
+  creationDate: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+whisperSchema.pre("save", function (next) {
+  this.updatedDate = Date.now();
+  next();
+});
+
+userSchema.pre("save", async function (next) {
+  const user = this
+  if(user.isModified('username')) {
+    const salt = await bcrypt.genSalt()
+    
+  }
 });
 
 const Whisper = mongoose.model("Whisper", whisperSchema);
