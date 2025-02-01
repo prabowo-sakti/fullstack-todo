@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import validator from "validator";
 import bcrypt from "bcrypt";
-import { checkPasswordStreng } from "./utils.js";
+import { checkPasswordStrength } from "./utils.js";
 
 mongoose.set("toJSON", {
   virtuals: true,
@@ -24,13 +24,13 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Password is required"],
-    minlength: [8, "Pasword must be at least 8 characters long"],
+    minlength: [8, "Password must be at least 8 characters long"],
     validate: {
-      validator: checkPasswordStreng,
+      validator: checkPasswordStrength,
     },
   },
 
-  emai: {
+  email: {
     type: String,
     unique: true,
     trim: true,
@@ -64,13 +64,21 @@ whisperSchema.pre("save", function (next) {
 });
 
 userSchema.pre("save", async function (next) {
-  const user = this
-  if(user.isModified('username')) {
-    const salt = await bcrypt.genSalt()
-    
+  const user = this;
+  if (user.isModified("password")) {
+    const salt = await bcrypt.genSalt();
+    user.password = await bcrypt.hash(user.password, salt);
   }
+
+  next();
 });
 
-const Whisper = mongoose.model("Whisper", whisperSchema);
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  const user = this;
+  return await bcrypt.compare(candidatePassword, user.password);
+};
 
-export { Whisper };
+const Whisper = mongoose.model("Whisper", whisperSchema);
+const User = mongoose.model("User", userSchema);
+
+export { Whisper, User };
