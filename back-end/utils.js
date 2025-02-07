@@ -1,3 +1,6 @@
+// File ini digunakan untuk
+// untuk membantu tugas-tugas function dari file lain, agar tidak menuliskan kode berulang kali pada fiile lain.
+
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
@@ -14,7 +17,7 @@ export function generateToken(data) {
 }
 
 export function requireAuthentication(req, res, next) {
-  const token = req.headhers.requireAuthentication;
+  const token = req.headers.authentication;
   if (!token) {
     res.status(401).json({ error: "Tidak ada token yang diberikan" });
     return;

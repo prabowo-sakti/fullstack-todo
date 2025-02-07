@@ -1,8 +1,12 @@
-import { Whisper } from "./database.mjs";
+// File whisper.mjs berfungsi sebagai sistem untuk mencari user, mengupdate user
+// menambahkan user, dan menghapus user.
 
-const getAll = () => Whisper.find();
+import { Whisper } from "../database.mjs";
 
-const getById = (id) => Whisper.findById({ _id: id });
+const getAll = () => Whisper.find().populate("author", "username");
+
+const getById = (id) =>
+  Whisper.findById({ _id: id }).populate("author", "username");
 
 const create = async (message) => {
   const whisper = new Whisper({ message });
