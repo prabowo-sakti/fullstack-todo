@@ -11,6 +11,8 @@ const getUserByCredentials = async (username, password) => {
   if (!user) {
     throw new Error("User not found!");
   }
+  //pada block kode dibawah ini, user.comparePassword berada di database.mjs
+  // baris kode 76 - 79
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
     throw new Error("Password is incorrect");

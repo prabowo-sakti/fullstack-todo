@@ -1,7 +1,9 @@
 import express from "express";
 import bodyParser from "body-parser";
-import { getAll, getById, create, updateById, deleteById } from "./store.mjs";
+import * as whisper from "./stores/whisper.mjs";
+import * as user from "./stores/user.mjs";
 import cors from "cors";
+import { generateToken } from "./utils.js";
 
 const corsOptions = {
   origin: "http://localhost:5173", // Ganti dengan origin frontend Anda
@@ -17,6 +19,25 @@ app.set("view engine", "ejs");
 
 app.get("/login", (req, res) => {
   res.render("login");
+});
+
+app.get("/signup", (req, res) => {
+  res.render("signup");
+});
+
+app.get("/logout", (req, res) => {
+  res.redirect("/login");
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const foundUser = await user.getUserByCredentials(username, password);
+    const accessToken = generateToken({ username, id: foundUser._id });
+    res.json({ accessToken });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 app.get("/about", async (req, res) => {
