@@ -4,6 +4,7 @@ const create = async (username, password, email) => {
   const user = new User({ username, password, email });
   await user.save();
   return user;
+  console.log(user);
 };
 
 const getUserByCredentials = async (username, password) => {

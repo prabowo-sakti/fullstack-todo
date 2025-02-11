@@ -14,6 +14,21 @@
     </nav>
     <main>
       <h1>Welcome Back!</h1>
+      <form id="login">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Your Username" />
+        <label for="password">Password </label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Your password"
+          required
+        />
+        <button type="submit">Login</button>
+      </form>
+
+      <p>Don't have an account yet? <a href="/signup">Sign Up</a></p>
     </main>
+    <script src="auth.js"></script>
   </body>
 </html>

@@ -40,6 +40,17 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.post("/signup", async (req, res) => {
+  try {
+    const { username, password, email } = req.body;
+    const newUser = await user.create(username, password, email);
+    const accessToken = generateToken({ username, id: newUser._id });
+    res.json({ accessToken });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 app.get("/about", async (req, res) => {
   const whispers = await getAll();
 
