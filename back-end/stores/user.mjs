@@ -3,8 +3,8 @@ import { User } from "../database.mjs";
 const create = async (username, password, email) => {
   const user = new User({ username, password, email });
   await user.save();
-  return user;
   console.log(user);
+  return user;
 };
 
 const getUserByCredentials = async (username, password) => {
