@@ -13,7 +13,7 @@ export function checkPasswordStrength(password) {
 }
 
 export function generateToken(data) {
-  return jwt.sign({ data }, process.env.JWT_SECRET, { expiresIn: "1h" });
+  return jwt.sign({ data: data }, process.env.JWT_SECRET, { expiresIn: "1h" });
 }
 
 export function requireAuthentication(req, res, next) {

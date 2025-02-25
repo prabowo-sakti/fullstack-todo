@@ -2,7 +2,7 @@
   "name": "belajar-nodejs-dengan-docker",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.mjs",
   "type": "module",
   "author": "",
   "license": "ISC",

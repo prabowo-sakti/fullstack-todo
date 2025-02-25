@@ -84,6 +84,7 @@ app.post("/api/v1/whisper", requireAuthentication, async (req, res) => {
 
 app.put("/api/v1/whisper/:id", requireAuthentication, async (req, res) => {
   const { message } = req.body;
+  console.log(req.params);
   const id = req.params.id;
 
   if (!message) {
