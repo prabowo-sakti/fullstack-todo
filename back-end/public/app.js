@@ -2,17 +2,6 @@
 const whispers = document.getElementById("whispers");
 const whisperCreateButton = document.getElementById("whisper-create");
 const welcome = document.getElementById("welcome");
-
-const accessToken = localStorage.getItem("accessToken");
-
-if (!accessToken) {
-  window.location.href = "/login";
-}
-
-const { data: user } = parseJwt(accessToken);
-
-welcome.innerText = `Welcome, ${user.username} 👋`;
-refreshAllUI();
 // == Event Listeners ==
 whispers.addEventListener("click", (event) => {
   if (event.target.tagName === "BUTTON") {
@@ -128,3 +117,13 @@ const requestUserDelete = (id) => {
 };
 
 // == Initialization ==
+const accessToken = localStorage.getItem("accessToken");
+
+if (!accessToken) {
+  window.location.href = "/login";
+}
+
+const { data: user } = parseJwt(accessToken);
+
+welcome.innerText = `Welcome, ${user.username} 👋`;
+refreshAllUI();

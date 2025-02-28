@@ -47,7 +47,7 @@ app.post("/signup", async (req, res) => {
     const accessToken = generateToken({ username, id: newUser._id });
     res.json({ accessToken });
   } catch (err) {
-    res.status(400).json({ err });
+    res.status(400).json({ error: err.message });
   }
 });
 
