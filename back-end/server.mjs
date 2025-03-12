@@ -109,7 +109,7 @@ app.delete("/api/v1/whisper/:id", requireAuthentication, async (req, res) => {
     res.sendStatus(404);
     return;
   }
-  await deleteById(id);
+  await whisper.deleteById(id);
   res.sendStatus(200);
 });
 

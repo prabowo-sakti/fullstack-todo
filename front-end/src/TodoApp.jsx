@@ -1,16 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 import Form from "./Form";
 import Todo from "./Todo";
 import FilterButton from "./FilterButton";
-function usePrevious(value) {
-  const ref = useRef(null);
-  useEffect(() => {
-    ref.current = value;
-  }, [value]);
-
-  return ref.current;
-}
+import { useAuth } from "./provider/authProvider";
 
 const FILTER_MAP = {
   All: () => true,
@@ -25,6 +18,8 @@ function TodoApp() {
   const [filter, setFilter] = useState("All");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { token } = useAuth();
+  console.log(tasks);
 
   function toggleTaskCompleted(id) {
     const updateTasks = tasks.map((task) => {
@@ -36,6 +31,7 @@ function TodoApp() {
     setTasks(updateTasks);
   }
 
+  //function ini ada di todo.jsx
   const deleteTask = async (id) => {
     console.log(`Attempting to delete task with ID: ${id}`);
     try {
@@ -44,8 +40,7 @@ function TodoApp() {
         {
           method: "DELETE",
           headers: {
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJuYW1lIjoic2FrdGkiLCJpZCI6IjY3ZDFhNTUyOTZlYTgxZDZjYWZiYzk2MiJ9LCJpYXQiOjE3NDE3OTI1OTQsImV4cCI6MTc0MTc5NjE5NH0.KXPmZ5mSm36uqqt04-qsHydwqahPT3UOp1-JOW0VpAI",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -77,8 +72,7 @@ function TodoApp() {
         const res = await fetch("http://localhost:3000/api/v1/whisper", {
           method: "GET",
           headers: {
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJuYW1lIjoic2FrdGkiLCJpZCI6IjY3ZDFhNTUyOTZlYTgxZDZjYWZiYzk2MiJ9LCJpYXQiOjE3NDE3OTI1OTQsImV4cCI6MTc0MTc5NjE5NH0.KXPmZ5mSm36uqqt04-qsHydwqahPT3UOp1-JOW0VpAI",
+            Authorization: `Bearer ${token}`,
           },
         }); // Path relatif
         if (!res.ok) {
@@ -137,8 +131,7 @@ function TodoApp() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJuYW1lIjoic2FrdGkiLCJpZCI6IjY3ZDFhNTUyOTZlYTgxZDZjYWZiYzk2MiJ9LCJpYXQiOjE3NDE3OTI1OTQsImV4cCI6MTc0MTc5NjE5NH0.KXPmZ5mSm36uqqt04-qsHydwqahPT3UOp1-JOW0VpAI",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ message: name }),
       });
@@ -168,12 +161,6 @@ function TodoApp() {
 
   const listHeadingRef = useRef(null);
   const prevTaskLength = usePrevious(tasks.length);
-
-  useEffect(() => {
-    if (tasks.length < prevTaskLength) {
-      listHeadingRef.current.focus();
-    }
-  }, [tasks.length, prevTaskLength]);
 
   return (
     <>

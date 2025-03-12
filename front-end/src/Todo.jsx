@@ -16,6 +16,7 @@ const Todo = ({
   deleteTask,
   editTask,
 }) => {
+  console.log("ini id:", id);
   const [isEditing, setEditing] = useState(false);
   const [newName, setNewName] = useState("");
 
