@@ -8,7 +8,7 @@ import { generateToken, requireAuthentication } from "./utils.js";
 const corsOptions = {
   origin: "http://localhost:5173", // Ganti dengan origin frontend Anda
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 const app = express();
@@ -47,7 +47,7 @@ app.post("/signup", async (req, res) => {
     const accessToken = generateToken({ username, id: newUser._id });
     res.json({ accessToken });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ kesalahan: err.message });
   }
 });
 

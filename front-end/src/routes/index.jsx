@@ -1,9 +1,11 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
-import Register from "../assets/components/Register";
+import Register from "../pages/Register";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "../provider/authProvider";
 import TodoApp from "../TodoApp";
 import ErrorBoundary from "../ErrorBoundary";
+import Login from "../pages/Login";
+import Logout from "../pages/Logout";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -31,18 +33,12 @@ const Routes = () => {
       children: [
         {
           index: true,
-          path: "dashboard",
-          element: <div>dashboard</div>,
+          element: <TodoApp />,
           errorElement: <ErrorBoundary />,
         },
         {
           path: "logout",
-          element: <div>Logout</div>,
-          errorElement: <ErrorBoundary />,
-        },
-        {
-          path: "create-whisper",
-          element: <TodoApp />,
+          element: <Logout />,
           errorElement: <ErrorBoundary />,
         },
       ],
@@ -56,7 +52,7 @@ const Routes = () => {
     },
     {
       path: "/login",
-      element: <div>Login</div>,
+      element: <Login />,
     },
     {
       path: "/register",
@@ -66,7 +62,8 @@ const Routes = () => {
 
   const router = createBrowserRouter([
     ...routesForPublic,
-    ...(token ? routesForAuthenticatedOnly : routesForNotAuthenticatedOnly),
+    ...(!token ? routesForNotAuthenticatedOnly : []),
+    ...routesForAuthenticatedOnly,
   ]);
 
   return <RouterProvider router={router} />;

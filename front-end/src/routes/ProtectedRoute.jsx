@@ -8,6 +8,14 @@ const ProtectedRoute = () => {
     return <Navigate to={"/register"} />;
   }
 
-  return <Outlet />;
+  return (
+    <>
+      <header>Ini menu header</header>
+      <nav>menu</nav>
+      <div>
+        <Outlet />
+      </div>
+    </>
+  );
 };
 export default ProtectedRoute;

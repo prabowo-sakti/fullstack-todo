@@ -43,6 +43,10 @@ function TodoApp() {
         `http://localhost:3000/api/v1/whisper/${id}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJuYW1lIjoic2FrdGkiLCJpZCI6IjY3ZDFhNTUyOTZlYTgxZDZjYWZiYzk2MiJ9LCJpYXQiOjE3NDE3OTI1OTQsImV4cCI6MTc0MTc5NjE5NH0.KXPmZ5mSm36uqqt04-qsHydwqahPT3UOp1-JOW0VpAI",
+          },
         }
       );
 
@@ -53,7 +57,7 @@ function TodoApp() {
         throw new Error("Gagal dalam menghapus task");
       }
     } catch (err) {
-      setError(err);
+      setError(err.message);
     }
   };
 
@@ -70,7 +74,13 @@ function TodoApp() {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/v1/whisper"); // Path relatif
+        const res = await fetch("http://localhost:3000/api/v1/whisper", {
+          method: "GET",
+          headers: {
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJuYW1lIjoic2FrdGkiLCJpZCI6IjY3ZDFhNTUyOTZlYTgxZDZjYWZiYzk2MiJ9LCJpYXQiOjE3NDE3OTI1OTQsImV4cCI6MTc0MTc5NjE5NH0.KXPmZ5mSm36uqqt04-qsHydwqahPT3UOp1-JOW0VpAI",
+          },
+        }); // Path relatif
         if (!res.ok) {
           throw new Error("Oops, server lagi bermasalah");
         }
@@ -83,8 +93,8 @@ function TodoApp() {
 
         setTasks(data);
       } catch (err) {
-        console.error("Fetch error:", err);
-        setError(err); // Pastikan menggunakan 'err' bukan 'er'
+        console.error("Fetch error:", err.message);
+        setError(err.message); // Pastikan menggunakan 'err' bukan 'er'
       } finally {
         setIsLoading(false);
       }
@@ -127,6 +137,8 @@ function TodoApp() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization:
+            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJuYW1lIjoic2FrdGkiLCJpZCI6IjY3ZDFhNTUyOTZlYTgxZDZjYWZiYzk2MiJ9LCJpYXQiOjE3NDE3OTI1OTQsImV4cCI6MTc0MTc5NjE5NH0.KXPmZ5mSm36uqqt04-qsHydwqahPT3UOp1-JOW0VpAI",
         },
         body: JSON.stringify({ message: name }),
       });
@@ -145,7 +157,7 @@ function TodoApp() {
 
       setTasks((prevTasks) => [...prevTasks, newTask]);
     } catch (error) {
-      setError(error);
+      setError(error.message);
     } finally {
       setIsLoading(false);
     }
