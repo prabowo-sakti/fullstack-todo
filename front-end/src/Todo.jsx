@@ -43,7 +43,7 @@ const Todo = ({
     <form className="space-y-4 relative top-10" onSubmit={handleSubmit}>
       <div className="flex flex-col">
         <label htmlFor={id} className="text-lg font-medium mb-2 top-20">
-          New name for {message}
+          Nama tugas baru, yaitu: {newName}
         </label>
         <input
           type="text"

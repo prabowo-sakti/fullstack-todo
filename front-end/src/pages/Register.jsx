@@ -42,7 +42,7 @@ export default function Register() {
       console.log("{accessToken:}", accessToken);
 
       setToken(accessToken);
-      // navigate("/");
+      navigate("/");
     } catch (err) {
       alert(err);
     }

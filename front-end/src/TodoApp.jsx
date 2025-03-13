@@ -19,7 +19,6 @@ function TodoApp() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const { token } = useAuth();
-  console.log(tasks);
 
   function toggleTaskCompleted(id) {
     const updateTasks = tasks.map((task) => {
@@ -64,6 +63,18 @@ function TodoApp() {
       return task;
     });
     setTasks(editedTaskList);
+    try {
+      fetch(`http://localhost:3000/api/v1/whisper/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ message: newName }),
+      });
+    } catch (error) {
+      setError(error.message);
+    }
   }
 
   useEffect(() => {
@@ -158,9 +169,6 @@ function TodoApp() {
 
   const taskNoun = taskList.length !== 1 ? "tasks" : "task";
   const headingText = `${taskList.length} ${taskNoun} remaining`;
-
-  const listHeadingRef = useRef(null);
-  const prevTaskLength = usePrevious(tasks.length);
 
   return (
     <>

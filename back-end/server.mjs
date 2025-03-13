@@ -92,7 +92,7 @@ app.put("/api/v1/whisper/:id", requireAuthentication, async (req, res) => {
     return;
   }
 
-  const storedWhisper = await getById(id);
+  const storedWhisper = await whisper.getById(id);
   if (!storedWhisper) {
     res.sendStatus(400);
   } else {
