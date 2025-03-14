@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import Register from "../pages/Register";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "../provider/authProvider";
-import TodoApp from "../TodoApp";
+import TodoApp from "../components/TodoApp";
 import ErrorBoundary from "../ErrorBoundary";
 import Login from "../pages/Login";
 import Logout from "../pages/Logout";
@@ -62,8 +62,7 @@ const Routes = () => {
 
   const router = createBrowserRouter([
     ...routesForPublic,
-    ...(!token ? routesForNotAuthenticatedOnly : []),
-    ...routesForAuthenticatedOnly,
+    ...(!token ? routesForNotAuthenticatedOnly : routesForAuthenticatedOnly),
   ]);
 
   return <RouterProvider router={router} />;

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router";
 import { useAuth } from "../provider/authProvider";
+import Login from "./Login";
 
 const Logout = () => {
   const { setToken } = useAuth();
@@ -15,7 +16,7 @@ const Logout = () => {
     handleLogout();
   }, 3 * 1000);
 
-  return <div>logout page</div>;
+  return <Login />;
 };
 
 export default Logout;

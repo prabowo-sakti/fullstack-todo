@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Form from "./Form";
 import Todo from "./Todo";
 import FilterButton from "./FilterButton";
-import { useAuth } from "./provider/authProvider";
+import { useAuth } from "../provider/authProvider";
 
 const FILTER_MAP = {
   All: () => true,

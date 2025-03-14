@@ -5,7 +5,7 @@ const ProtectedRoute = () => {
   const { token } = useAuth();
 
   if (!token) {
-    return <Navigate to={"/register"} />;
+    return <Navigate to={"/login"} />;
   }
 
   return (
