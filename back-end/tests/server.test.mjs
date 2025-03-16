@@ -1,6 +1,6 @@
 import supertest from "supertest";
 import { app } from "../server";
-import { getById } from "../store.mjs";
+import { getById } from "../stores/whisper.mjs";
 import {
   restoreDb,
   populateDb,
@@ -37,7 +37,75 @@ describe("Server", () => {
       expect(res.text).toContain("Welcome Back!");
     });
   });
-  describe("GET /signup", () => {});
+  describe("GET /signup", () => {
+    it("Should return a 200 with a signup page", async () => {
+      const res = await supertest(app).get("/signup");
+
+      expect(res.status).toBe(200);
+      expect(res.text).toContain("Create your account!");
+    });
+  });
+
+  describe("POST /signup", () => {
+    const newUser = {
+      username: "sakti_doe2",
+      password: "123456ASDasd@#",
+      email: "prabowo@sakti.com",
+    };
+    it("Should return a 400 when the body is empty", async () => {
+      const res = await supertest(app).post("/signup").send({});
+      expect(res.status).toBe(400);
+    });
+
+    it("Should return a 400 when the body is not completed", async () => {
+      const res = await supertest(app)
+        .post("/signup")
+        .send({ username: newUser.username });
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe(
+        "User validation failed: password: Password is required, email: Email is required"
+      );
+    });
+    it("should return a 400 when the password is weak", async () => {
+      const res = await supertest(app)
+        .post("/signup")
+        .send({ ...newUser, password: "weak" });
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe(
+        "User validation failed: password: Password must be at least 8 characters long"
+      );
+    });
+    it("Should return a 200 and a token when the user is created", async () => {
+      const res = await supertest(app).post("/signup").send(newUser);
+
+      expect(res.status).toBe(200);
+      expect(res.body.accessToken).toBeDefined();
+    });
+  });
+  describe("POST /login", async () => {
+    it("Should return a 400 when the body is empty", async () => {
+      const res = await supertest(app).post("/login").send({});
+      expect(res.status).toBe(400);
+    });
+
+    it("Should return a 400 when body is not completed", async () => {
+      const res = await supertest(app)
+        .post("/login")
+        .send({ username: "prabowo_doe" });
+      expect(res.status).toBe(400);
+    });
+
+    it("Should return a 400 when the user is not found", async () => {
+      const res = await supertest(app)
+        .post("/login")
+        .send({
+          username: `${firstUser.username}_invented`,
+          passowrd: firstUser.password,
+        });
+
+      expect(res.status).toBe(400);
+    });
+  });
   describe("GET /about", () => {
     it("Should return a 200 with the total whispers in the platform", async () => {
       const response = await supertest(app).get("/about");

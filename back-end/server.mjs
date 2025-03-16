@@ -36,6 +36,7 @@ app.post("/login", async (req, res) => {
     const accessToken = generateToken({ username, id: foundUser._id });
     res.json({ accessToken });
   } catch (err) {
+    console.log(err.message);
     res.status(400).json({ error: err.message });
   }
 });

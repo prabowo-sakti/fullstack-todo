@@ -38,10 +38,11 @@ export default function Login() {
           password,
         }),
       });
-      const data = await res.json();
+      cons data = await res.json();
       const { accessToken } = data;
 
       setToken(accessToken);
+    
     } catch (err) {
       alert(err);
     }
