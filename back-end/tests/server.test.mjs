@@ -13,6 +13,8 @@ import {
 let whispers;
 let inventedId;
 let existingId;
+let firstUser;
+let secondUser;
 
 describe("Server", () => {
   beforeAll(ensureDbConnection);
@@ -23,8 +25,19 @@ describe("Server", () => {
     whispers = fixtures.whispers;
     inventedId = fixtures.inventedId;
     existingId = fixtures.existingId;
+    firstUser = fixtures.firstUser;
+    secondUser = fixtures.secondUser;
   });
   afterAll(closeDbConnection);
+
+  describe("GET /login", () => {
+    it("Should return a 200 with a login page", async () => {
+      const res = await supertest(app).get("/login");
+      expect(res.status).toBe(200);
+      expect(res.text).toContain("Welcome Back!");
+    });
+  });
+  describe("GET /signup", () => {});
   describe("GET /about", () => {
     it("Should return a 200 with the total whispers in the platform", async () => {
       const response = await supertest(app).get("/about");
