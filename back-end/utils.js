@@ -19,7 +19,7 @@ export function generateToken(data) {
 export function requireAuthentication(req, res, next) {
   const token = req.headers.authorization;
   if (!token) {
-    res.status(401).json({ error: "Tidak ada token yang diberikan" });
+    res.status(401).json({ error: "No token provided" });
     return;
   }
 

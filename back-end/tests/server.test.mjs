@@ -105,6 +105,24 @@ describe("Server", () => {
 
       expect(res.status).toBe(400);
     });
+    it("Should return a 400 when the password is incorrect", async () => {
+      const res = await supertest(app)
+        .post("/login")
+        .send({
+          useranme: firstUser.useranme,
+          password: `${firstUser.password}_invented`,
+        });
+
+      expect(res.status).toBe(400);
+    });
+    it("Should return a 200 and an accessToken when the user is created", async () => {
+      const res = await supertest(app)
+        .post("/login")
+        .send({ username: firstUser.username, password: firstUser.password });
+
+      expect(res.status).toBe(200);
+      expect(res.body.accessToken).toBeDefined();
+    });
   });
   describe("GET /about", () => {
     it("Should return a 200 with the total whispers in the platform", async () => {
@@ -116,9 +134,16 @@ describe("Server", () => {
     });
   });
   describe("GET /api/v1/whisper", () => {
+    it("Should return a 401 when the user is not authenticated", async () => {
+      const res = await supertest(app).get("/api/v1/whisper/");
+      expect(res.status).toBe(401);
+      expect(res.body.error).toBe("No token provided");
+    });
     it("Should return an empty array when there's no data", async () => {
-      await restoreDb(); // empty the db
-      const response = await supertest(app).get("/api/v1/whisper");
+      restoreDb(); // empty the db
+      const response = await supertest(app)
+        .get("/api/v1/whisper")
+        .set("Authentication", `Bearer ${firstUser.token}`);
       expect(response.status).toBe(200);
       expect(response.body).toEqual([]);
     });
@@ -129,16 +154,21 @@ describe("Server", () => {
     });
   });
   describe("GET /api/v1/whisper/:id", () => {
+    it("Should return a 401 when the user is not authenticated", async () => {
+      const res = await supertest(app).get(`/api/v1/whisper/${existingId}`);
+      expect(res.status).toBe(401);
+      expect(res.body.error).toBe("No token provided");
+    });
     it("Should return a 404 when the whisper doesn't exist", async () => {
-      const response = await supertest(app).get(
-        `/api/v1/whisper/${inventedId}`
-      );
+      const response = await supertest(app)
+        .get(`/api/v1/whisper/${inventedId}`)
+        .set("Authentication", `Bearer ${firstUser.token}`);
       expect(response.status).toBe(404);
     });
     it("Should return a whisper details", async () => {
-      const response = await supertest(app).get(
-        `/api/v1/whisper/${existingId}`
-      );
+      const response = await supertest(app)
+        .get(`/api/v1/whisper/${existingId}`)
+        .set("Authentication", `Bearer ${firstUser.token}`);
       expect(response.status).toBe(200);
       expect(response.body).toEqual(whispers.find((w) => w.id === existingId));
     });
