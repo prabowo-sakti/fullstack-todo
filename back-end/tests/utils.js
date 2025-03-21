@@ -21,9 +21,8 @@ const closeDbConnection = async () => {
   }
 };
 
-const restoreDb = () => {
-  Whisper.deleteMany({});
-  User.deleteMany({});
+const restoreDb = async () => {
+  await Promise.all([Whisper.deleteMany({}), User.deleteMany({})]);
 };
 
 const getUsersFixtures = () => [

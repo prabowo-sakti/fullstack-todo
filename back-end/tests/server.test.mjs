@@ -82,7 +82,7 @@ describe("Server", () => {
       expect(res.body.accessToken).toBeDefined();
     });
   });
-  describe("POST /login", async () => {
+  describe("POST /login", () => {
     it("Should return a 400 when the body is empty", async () => {
       const res = await supertest(app).post("/login").send({});
       expect(res.status).toBe(400);
@@ -148,7 +148,10 @@ describe("Server", () => {
       expect(response.body).toEqual([]);
     });
     it("Should return all the whispers", async () => {
-      const response = await supertest(app).get("/api/v1/whisper");
+      const response = await supertest(app)
+        .get("/api/v1/whisper")
+        .set("Authentication", `Bearer ${firstUser.token}`);
+
       expect(response.status).toBe(200);
       expect(response.body).toEqual(whispers);
     });
@@ -202,7 +205,7 @@ describe("Server", () => {
       const response = await supertest(app)
         .post("/api/v1/whisper")
         .set("Authentication", `Bearer ${firstUser.token}`)
-        .send(message);
+        .send({ message: message });
       expect(response.status).toBe(201);
       expect(response.body.message).toEqual(message);
 

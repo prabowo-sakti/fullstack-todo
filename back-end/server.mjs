@@ -40,7 +40,6 @@ app.post("/login", async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
-
 app.post("/signup", async (req, res) => {
   try {
     const { username, password, email } = req.body;
@@ -48,7 +47,7 @@ app.post("/signup", async (req, res) => {
     const accessToken = generateToken({ username, id: newUser._id });
     res.json({ accessToken });
   } catch (err) {
-    res.status(400).json({ kesalahan: err.message });
+    res.status(400).json({ error: err.message });
   }
 });
 
