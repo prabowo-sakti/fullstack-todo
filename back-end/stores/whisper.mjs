@@ -3,13 +3,13 @@
 
 import { Whisper } from "../database.mjs";
 
-const getAll = () => Whisper.find().populate("author", "username");
+const getAll = async () => await Whisper.find().populate("author", "username");
 
-const getById = (id) =>
-  Whisper.findById({ _id: id }).populate("author", "username");
+const getById = async (id) =>
+  await Whisper.findById({ _id: id }).populate("author", "username");
 
-const create = async (message) => {
-  const whisper = new Whisper({ message });
+const create = async (message, authorId) => {
+  const whisper = new Whisper({ message, author: authorId });
   await whisper.save();
   return whisper;
 };

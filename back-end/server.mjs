@@ -77,14 +77,13 @@ app.post("/api/v1/whisper", requireAuthentication, async (req, res) => {
   if (!message) {
     res.sendStatus(400);
   } else {
-    const newWhisper = await whisper.create(message);
+    const newWhisper = await whisper.create(message, req.user.id);
     res.status(201).json(newWhisper);
   }
 });
 
 app.put("/api/v1/whisper/:id", requireAuthentication, async (req, res) => {
   const { message } = req.body;
-  console.log(req.params);
   const id = req.params.id;
 
   if (!message) {
@@ -94,11 +93,17 @@ app.put("/api/v1/whisper/:id", requireAuthentication, async (req, res) => {
 
   const storedWhisper = await whisper.getById(id);
   if (!storedWhisper) {
-    res.sendStatus(400);
-  } else {
-    await whisper.updateById(id, message);
-    res.sendStatus(200);
+    res.sendStatus(404);
+    return;
   }
+
+  // if (storedWhisper.author.id !== req.user.id) {
+  //   res.sendStatus(403);
+  //   return;
+  // }
+
+  await whisper.deleteById(id);
+  res.sendStatus(200);
 });
 
 app.delete("/api/v1/whisper/:id", requireAuthentication, async (req, res) => {

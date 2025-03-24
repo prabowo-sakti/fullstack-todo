@@ -17,7 +17,7 @@ export function generateToken(data) {
 }
 
 export function requireAuthentication(req, res, next) {
-  const token = req.headers.authentication;
+  const token = req.headers.authorization;
   if (!token) {
     res.status(401).json({ error: "No token provided" });
     return;
@@ -26,6 +26,7 @@ export function requireAuthentication(req, res, next) {
   try {
     const accessToken = token.split(" ")[1];
     const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
+    console.log(decoded);
     req.user = decoded.data;
     next();
   } catch (err) {
