@@ -65,8 +65,10 @@ const getFixtures = async () => {
   const whispers = JSON.parse(JSON.stringify(data));
   const inventedId = "64e0e5c75a4a3c715b7c1074";
   const existingId = data[0].id;
+  console.log("Using existingId:", existingId);
   const storedUsers = await User.find();
   const [firstUser, secondUser] = getUsersFixtures();
+  console.log;
   firstUser.id = storedUsers[0]._id.toString();
   secondUser.id = storedUsers[1]._id.toString();
   firstUser.token = generateToken({

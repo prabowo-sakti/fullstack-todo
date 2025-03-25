@@ -5,8 +5,12 @@ import { Whisper } from "../database.mjs";
 
 const getAll = async () => await Whisper.find().populate("author", "username");
 
-const getById = async (id) =>
-  await Whisper.findById(id).populate("author", "username");
+const getById = async (id) => {
+  console.log("Fetching before populate:", id);
+  const whisper = await Whisper.findById(id).populate("author", "username");
+  console.log("Fetching after populate:", whisper);
+  return whisper;
+};
 
 const create = async (message, authorId) => {
   const whisper = new Whisper({ message, author: authorId });

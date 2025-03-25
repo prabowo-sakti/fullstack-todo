@@ -19,6 +19,7 @@ let secondUser;
 describe("Server", () => {
   beforeAll(ensureDbConnection);
   beforeEach(async () => {
+    console.log("Restoring and populating db");
     await restoreDb();
     await populateDb(whispers);
     const fixtures = await getFixtures();
@@ -27,6 +28,14 @@ describe("Server", () => {
     existingId = fixtures.existingId;
     firstUser = fixtures.firstUser;
     secondUser = fixtures.secondUser;
+
+    console.log("Fixtures loaded:", {
+      whispers,
+      inventedId,
+      existingId,
+      firstUser,
+      secondUser,
+    });
   });
   afterAll(closeDbConnection);
 
@@ -250,7 +259,7 @@ describe("Server", () => {
 
     it("Should return a 403 when the user is not the author", async () => {
       const res = await supertest(app)
-        .put(`api/v1/whisper/${existingId}`)
+        .put(`/api/v1/whisper/${existingId}`)
         .set("Authentication", `Bearer ${secondUser.token}`)
         .send({
           message: "Whisper updated",
@@ -258,16 +267,30 @@ describe("Server", () => {
       expect(res.status).toBe(403);
     });
     it("Should return a 200 when the whisper is updated", async () => {
+      console.log("Starting update test with existingId:", existingId);
       const response = await supertest(app)
         .put(`/api/v1/whisper/${existingId}`)
         .set("Authentication", `Bearer ${firstUser.token}`)
         .send({ message: "Whisper updated" });
+
+      console.log(
+        "Update response when the whisper is updated:",
+        response.body,
+        response.status
+      );
       expect(response.status).toBe(200);
 
       // Database changes
       const storedWhisper = await getById(existingId);
+      console.log("Get whisper by id:", storedWhisper);
+      if (!storedWhisper) {
+        console.error("Whisper not found after update");
+        throw new Error(
+          `whisper with ID ${existingId} is not found after update`
+        );
+      }
       const normalizedWhisper = normalize(storedWhisper);
-      expect(normalizedWhisper.id).toBe(existingId);
+      expect(normalizedWhisper().id).toBe(existingId);
       expect(normalizedWhisper.message).toBe("Whisper updated");
     });
   });
