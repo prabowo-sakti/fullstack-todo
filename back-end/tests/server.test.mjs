@@ -109,7 +109,7 @@ describe("Server", () => {
       const res = await supertest(app)
         .post("/login")
         .send({
-          useranme: firstUser.useranme,
+          username: firstUser.username,
           password: `${firstUser.password}_invented`,
         });
 
@@ -126,7 +126,9 @@ describe("Server", () => {
   });
   describe("GET /about", () => {
     it("Should return a 200 with the total whispers in the platform", async () => {
-      const response = await supertest(app).get("/about");
+      const response = await supertest(app)
+        .get("/about")
+        .set("Autehntication", `Bearer ${firstUser.token}`);
       expect(response.status).toBe(200);
       expect(response.text).toContain(
         `Currently there are ${whispers.length} whispers available`
@@ -140,7 +142,7 @@ describe("Server", () => {
       expect(res.body.error).toBe("No token provided");
     });
     it("Should return an empty array when there's no data", async () => {
-      restoreDb(); // empty the db
+      await restoreDb(); // empty the db
       const response = await supertest(app)
         .get("/api/v1/whisper")
         .set("Authentication", `Bearer ${firstUser.token}`);
@@ -201,13 +203,12 @@ describe("Server", () => {
     });
     it("Should return a 201 when the whisper is created", async () => {
       const newWhisper = { message: "This is a new whisper" };
-      const { message } = newWhisper;
       const response = await supertest(app)
         .post("/api/v1/whisper")
         .set("Authentication", `Bearer ${firstUser.token}`)
-        .send({ message: message });
+        .send({ message: newWhisper.message });
       expect(response.status).toBe(201);
-      expect(response.body.message).toEqual(message);
+      expect(response.body.message).toEqual(newWhisper.message);
 
       // Database changes
       const storedWhisper = await getById(response.body.id);
@@ -227,6 +228,7 @@ describe("Server", () => {
     it("Should return a 400 when the body is invalid", async () => {
       const response = await supertest(app)
         .put(`/api/v1/whisper/${existingId}`)
+        .set("Authentication", `Bearer ${firstUser.token}`)
         .send({ invented: "This a new field" });
       expect(response.status).toBe(400);
     });
@@ -248,7 +250,7 @@ describe("Server", () => {
 
     it("Should return a 403 when the user is not the author", async () => {
       const res = await supertest(app)
-        .delete(`api/v1/whisper/${existingId}`)
+        .put(`api/v1/whisper/${existingId}`)
         .set("Authentication", `Bearer ${secondUser.token}`);
       expect(res.status).toBe(403);
     });

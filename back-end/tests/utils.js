@@ -67,15 +67,15 @@ const getFixtures = async () => {
   const existingId = data[0].id;
   const storedUsers = await User.find();
   const [firstUser, secondUser] = getUsersFixtures();
-  firstUser.id = storedUsers[0]._id.toString;
-  secondUser.id = storedUsers[1]._id.toString;
+  firstUser.id = storedUsers[0]._id.toString();
+  secondUser.id = storedUsers[1]._id.toString();
   firstUser.token = generateToken({
     id: firstUser.id,
     username: firstUser.username,
   });
   secondUser.token = generateToken({
     id: secondUser.id,
-    username: secondUser.id,
+    username: secondUser.username,
   });
 
   return { inventedId, existingId, whispers, firstUser, secondUser };

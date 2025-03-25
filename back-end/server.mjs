@@ -97,10 +97,10 @@ app.put("/api/v1/whisper/:id", requireAuthentication, async (req, res) => {
     return;
   }
 
-  // if (storedWhisper.author.id !== req.user.id) {
-  //   res.sendStatus(403);
-  //   return;
-  // }
+  if (storedWhisper.author.id !== req.user.id) {
+    res.sendStatus(403);
+    return;
+  }
 
   await whisper.deleteById(id);
   res.sendStatus(200);
@@ -112,6 +112,10 @@ app.delete("/api/v1/whisper/:id", requireAuthentication, async (req, res) => {
 
   if (!storedWhisper) {
     res.sendStatus(404);
+    return;
+  }
+  if (storedWhisper.author.id !== req.user.id) {
+    res.sendStatus(403);
     return;
   }
   await whisper.deleteById(id);
