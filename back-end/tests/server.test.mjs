@@ -251,7 +251,10 @@ describe("Server", () => {
     it("Should return a 403 when the user is not the author", async () => {
       const res = await supertest(app)
         .put(`api/v1/whisper/${existingId}`)
-        .set("Authentication", `Bearer ${secondUser.token}`);
+        .set("Authentication", `Bearer ${secondUser.token}`)
+        .send({
+          message: "Whisper updated",
+        });
       expect(res.status).toBe(403);
     });
     it("Should return a 200 when the whisper is updated", async () => {

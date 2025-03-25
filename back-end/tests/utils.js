@@ -81,7 +81,12 @@ const getFixtures = async () => {
   return { inventedId, existingId, whispers, firstUser, secondUser };
 };
 
-const normalize = (data) => JSON.parse(JSON.stringify(data));
+const normalize = (data) => {
+  const clonedData = JSON.parse(JSON.stringify(data));
+
+  console.log("clonedData:", clonedData);
+  return clonedData;
+};
 
 export {
   restoreDb,
