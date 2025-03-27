@@ -68,7 +68,7 @@ const getFixtures = async () => {
   console.log("Using existingId:", existingId);
   const storedUsers = await User.find();
   const [firstUser, secondUser] = getUsersFixtures();
-  console.log;
+  console.log(firstUser);
   firstUser.id = storedUsers[0]._id.toString();
   secondUser.id = storedUsers[1]._id.toString();
   firstUser.token = generateToken({
@@ -83,12 +83,7 @@ const getFixtures = async () => {
   return { inventedId, existingId, whispers, firstUser, secondUser };
 };
 
-const normalize = (data) => {
-  const clonedData = JSON.parse(JSON.stringify(data));
-
-  console.log("clonedData:", clonedData);
-  return clonedData;
-};
+const normalize = (data) => JSON.parse(JSON.stringify(data));
 
 export {
   restoreDb,

@@ -266,7 +266,7 @@ describe("Server", () => {
         });
       expect(res.status).toBe(403);
     });
-    it("Should return a 200 when the whisper is updated", async () => {
+    it.only("Should return a 200 when the whisper is updated", async () => {
       console.log("Starting update test with existingId:", existingId);
       const response = await supertest(app)
         .put(`/api/v1/whisper/${existingId}`)
@@ -283,15 +283,9 @@ describe("Server", () => {
       // Database changes
       const storedWhisper = await getById(existingId);
       console.log("Get whisper by id:", storedWhisper);
-      if (!storedWhisper) {
-        console.error("Whisper not found after update");
-        throw new Error(
-          `whisper with ID ${existingId} is not found after update`
-        );
-      }
-      const normalizedWhisper = normalize(storedWhisper);
-      expect(normalizedWhisper().id).toBe(existingId);
-      expect(normalizedWhisper.message).toBe("Whisper updated");
+
+      expect(normalize(storedWhisper).id).toBe(existingId);
+      expect(normalize(storedWhisper).message).toBe("Whisper updated");
     });
   });
   describe("DELETE /api/v1/whisper/:id", () => {

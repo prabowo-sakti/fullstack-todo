@@ -102,7 +102,7 @@ app.put("/api/v1/whisper/:id", requireAuthentication, async (req, res) => {
     return;
   }
 
-  await whisper.deleteById(id);
+  await whisper.updateById(id, message);
   res.sendStatus(200);
 });
 
