@@ -91,7 +91,6 @@ function TodoApp() {
         }
 
         const data = await res.json();
-        console.log(data);
         if (!Array.isArray(data)) {
           throw new Error("Data yang dikirimkan bukan array");
         }
