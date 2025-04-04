@@ -92,7 +92,7 @@ app.post("/signup", async (req, res, next) => {
 app.get("/about", async (req, res, next) => {
   try {
     const whispers = await whisper.getAll();
-    if (!whispers) {
+    if (whispers.length <= 0) {
       throw new NotFoundError("Any whispers not found");
     }
     res.render("about", { whispers });
@@ -104,7 +104,7 @@ app.get("/about", async (req, res, next) => {
 app.get("/api/v1/whisper", requireAuthentication, async (req, res, next) => {
   try {
     const whispers = await whisper.getAll();
-    if (!whispers) {
+    if (whispers.length <= 0) {
       throw new NotFoundError("Any Whispers not found");
     }
     res.json(whispers);
@@ -120,7 +120,7 @@ app.get(
     try {
       const id = req.params.id;
       const whispers = await whisper.getById(id);
-      if (!whispers) {
+      if (whispers.length <= 0) {
         throw new NotFoundError(`Whisper with ID: ${id} is not found`);
       }
       res.json(whispers);
@@ -156,7 +156,7 @@ app.put(
       }
 
       const storedWhisper = await whisper.getById(id);
-      if (!storedWhisper) {
+      if (storedWhisper <= 0) {
         throw new NotFoundError(`Whisper dengan ID: ${id} tidak ditemukan`);
       }
 
@@ -178,12 +178,11 @@ app.delete(
   "/api/v1/whisper/:id",
   requireAuthentication,
   async (req, res, next) => {
-    ``;
     try {
       const id = req.params.id;
       const storedWhisper = await whisper.getById(id);
 
-      if (!storedWhisper) {
+      if (storedWhisper.length <= 0) {
         throw new NotFoundError(`Whisper dengan ID: ${id} tidak ditemukan`);
       }
       if (storedWhisper.author.id !== req.user.id) {
@@ -199,4 +198,31 @@ app.delete(
   }
 );
 
+app.use((err, req, res, next) => {
+  if (err instanceof NotFoundError) {
+    console.log(`[NOT FOUND] ${req.method} ${req.originalUrl} `);
+
+    if (req.originalUrl.startsWith("/api/")) {
+      return res.status(404).json({
+        statusCode: 404,
+        errorStatus: "Resource not found",
+        message: err.message,
+        path: req.originalUrl,
+      });
+    }
+
+    return res.status(404).render("error", {
+      title: "404 Not Found",
+      message: err.message,
+      statusCode: 404,
+    });
+  }
+  next(err);
+});
+
+app.use((err, req, res, next) => {
+  if (err instanceof BadRequestError) {
+    console.log(`[Bad Request] ${req.method},${req.originalUrl}, `);
+  }
+});
 export { app };
