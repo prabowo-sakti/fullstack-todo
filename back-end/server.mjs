@@ -6,22 +6,31 @@ import cors from "cors";
 import { generateToken, requireAuthentication } from "./utils.js";
 
 class APIError extends Error {
-  constructor(message, statusCode) {
+  constructor(message, statusCode, code = null) {
     super(message);
     this.statusCode = statusCode;
     this.name = this.constructor.name;
+    this.code =
+      code || this.constructor.name.replace(/Error$/, "").toUpperCase();
   }
 }
 
 class NotFoundError extends APIError {
   constructor(message = "Resource not Found") {
-    super(message, 404);
+    super(message, 404, "RESOURCE_NOT_FOUND");
   }
 }
 
 class BadRequestError extends APIError {
   constructor(message = "Invalid request parameters") {
-    super(message, 400);
+    super(message, 400, "BAD_REQUEST");
+  }
+}
+
+class ValidationError extends BadRequestError {
+  constructor(message = "Validasi data gagal", allErrors = []) {
+    super(message, 400, "VALIDATION_ERROR");
+    this;
   }
 }
 
@@ -29,13 +38,13 @@ class ForbiddenError extends APIError {
   constructor(
     message = "You do not have permissission to access this resource"
   ) {
-    super(message, 403);
+    super(message, 403, "FORBIDDEN_ACCESS");
   }
 }
 
 class AuthenticationError extends APIError {
   constructor(message = "Authentication failed") {
-    super(message, 401);
+    super(message, 401, "UNAUTHORIZED");
   }
 }
 const corsOptions = {
@@ -93,7 +102,7 @@ app.get("/about", async (req, res, next) => {
   try {
     const whispers = await whisper.getAll();
     if (whispers.length <= 0) {
-      throw new NotFoundError("Any whispers not found");
+      throw new NotFoundError("Upps, tidak ada whisper yang ditemukan satupun");
     }
     res.render("about", { whispers });
   } catch (error) {
@@ -105,7 +114,7 @@ app.get("/api/v1/whisper", requireAuthentication, async (req, res, next) => {
   try {
     const whispers = await whisper.getAll();
     if (whispers.length <= 0) {
-      throw new NotFoundError("Any Whispers not found");
+      throw new NotFoundError("Upps, tidak ada whisper yang ditemukan satupun");
     }
     res.json(whispers);
   } catch (error) {
@@ -198,31 +207,41 @@ app.delete(
   }
 );
 
+// 1. Error handler unutuk menangani error tidak menemukan whisper
 app.use((err, req, res, next) => {
   if (err instanceof NotFoundError) {
-    console.log(`[NOT FOUND] ${req.method} ${req.originalUrl} `);
-
     if (req.originalUrl.startsWith("/api/")) {
       return res.status(404).json({
-        statusCode: 404,
-        errorStatus: "Resource not found",
-        message: err.message,
-        path: req.originalUrl,
+        succes: false,
+        error: {
+          statusCode: err.statusCode,
+          code: err.code,
+          message: err.message,
+        },
+        timestamp: new Date().toISOString(),
+        pathUrl: req.originalUrl,
       });
     }
 
     return res.status(404).render("error", {
       title: "404 Not Found",
       message: err.message,
-      statusCode: 404,
+      statusCode: err.statusCode,
     });
   }
   next(err);
 });
 
 app.use((err, req, res, next) => {
-  if (err instanceof BadRequestError) {
-    console.log(`[Bad Request] ${req.method},${req.originalUrl}, `);
+  if (err instanceof ValidationError) {
+    return res.status(400).json({
+      sucess: false,
+      error: {
+        statusCode: err.statusCode,
+        code: err.code,
+        message: err.message,
+      },
+    });
   }
 });
 export { app };
