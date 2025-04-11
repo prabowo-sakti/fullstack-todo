@@ -30,7 +30,7 @@ class BadRequestError extends APIError {
 class ValidationError extends BadRequestError {
   constructor(message = "Validasi data gagal", allErrors = []) {
     super(message, 400, "VALIDATION_ERROR");
-    this;
+    this.allErrors = allErrors;
   }
 }
 
