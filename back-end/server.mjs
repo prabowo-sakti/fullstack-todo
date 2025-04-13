@@ -23,14 +23,18 @@ class NotFoundError extends APIError {
 }
 
 class BadRequestError extends APIError {
-  constructor(message = "Invalid request parameters") {
-    super(message, 400, "BAD_REQUEST");
+  constructor(
+    message = "Invalid request parameters",
+    statusCode = 400,
+    code = "BAD_REQUEST"
+  ) {
+    super(message, statusCode, code);
   }
 }
 
 class ValidationError extends BadRequestError {
   constructor(message = "Validasi data gagal", allErrors = []) {
-    super(message, 400, "VALIDATION_FAILED");
+    super(message, 400, "VALIDATION_ERROR");
     this.allErrors = allErrors;
   }
 }
@@ -88,8 +92,8 @@ app.post("/signup", async (req, res, next) => {
     const { username, password, email } = req.body;
     const usernameValidation = validateUsername(username);
     if (!usernameValidation.isValid) {
-      throw new ValidationError(usernameValidation.message, [
-        usernameValidation.message,
+      throw new ValidationError(`Username validation failed`, [
+        { field: "username", message: usernameValidation.message },
       ]);
     }
     const newUser = await user.create(username, password, email);
@@ -131,7 +135,7 @@ app.get(
     try {
       const id = req.params.id;
       const whispers = await whisper.getById(id);
-      if (whispers.length <= 0) {
+      if (!whispers) {
         throw new NotFoundError(`Whisper with ID: ${id} is not found`);
       }
       res.json(whispers);
@@ -167,7 +171,7 @@ app.put(
       }
 
       const storedWhisper = await whisper.getById(id);
-      if (storedWhisper <= 0) {
+      if (!storedWhisper) {
         throw new NotFoundError(`Whisper dengan ID: ${id} tidak ditemukan`);
       }
 
@@ -235,6 +239,22 @@ app.use((err, req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+  if (err instanceof ForbiddenError) {
+    return res.status(403).json({
+      success: false,
+      error: {
+        statusCode: err.statusCode,
+        code: err.code,
+        message: err.message,
+      },
+      timestamp: new Date().toISOString(),
+      pathUrl: req.originalUrl,
+    });
+  }
+  next(err);
+});
+
+app.use((err, req, res, next) => {
   if (err instanceof ValidationError) {
     return res.status(400).json({
       success: false,
@@ -250,4 +270,22 @@ app.use((err, req, res, next) => {
   }
   next(err);
 });
+
+// Handler untuk BadRequestError DITEMPATKAN SETELAHNYA
+app.use((err, req, res, next) => {
+  if (err instanceof BadRequestError) {
+    return res.status(400).json({
+      success: false,
+      error: {
+        statusCode: err.statusCode,
+        code: err.code,
+        message: err.message,
+      },
+      timestamp: new Date().toISOString(),
+      pathUrl: req.originalUrl,
+    });
+  }
+  next(err);
+});
+
 export { app };
