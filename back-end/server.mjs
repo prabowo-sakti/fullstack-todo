@@ -4,6 +4,7 @@ import * as whisper from "./stores/whisper.mjs";
 import * as user from "./stores/user.mjs";
 import cors from "cors";
 import { generateToken, requireAuthentication } from "./utils.js";
+import { validateUsername } from "./validation.js";
 
 class APIError extends Error {
   constructor(message, statusCode, code = null) {
@@ -29,15 +30,13 @@ class BadRequestError extends APIError {
 
 class ValidationError extends BadRequestError {
   constructor(message = "Validasi data gagal", allErrors = []) {
-    super(message, 400, "VALIDATION_ERROR");
+    super(message, 400, "VALIDATION_FAILED");
     this.allErrors = allErrors;
   }
 }
 
 class ForbiddenError extends APIError {
-  constructor(
-    message = "You do not have permissission to access this resource"
-  ) {
+  constructor(message = "You do not have permission to access this resource") {
     super(message, 403, "FORBIDDEN_ACCESS");
   }
 }
@@ -87,8 +86,11 @@ app.post("/login", async (req, res, next) => {
 app.post("/signup", async (req, res, next) => {
   try {
     const { username, password, email } = req.body;
-    if (!username || !password || !email) {
-      throw new BadRequestError("Username, password, and email are required");
+    const usernameValidation = validateUsername(username);
+    if (!usernameValidation.isValid) {
+      throw new ValidationError(usernameValidation.message, [
+        usernameValidation.message,
+      ]);
     }
     const newUser = await user.create(username, password, email);
     const accessToken = generateToken({ username, id: newUser._id });
@@ -235,13 +237,17 @@ app.use((err, req, res, next) => {
 app.use((err, req, res, next) => {
   if (err instanceof ValidationError) {
     return res.status(400).json({
-      sucess: false,
+      success: false,
       error: {
         statusCode: err.statusCode,
         code: err.code,
         message: err.message,
+        allErrors: err.allErrors,
       },
+      timestamp: new Date().toISOString(),
+      pathUrl: req.originalUrl,
     });
   }
+  next(err);
 });
 export { app };
