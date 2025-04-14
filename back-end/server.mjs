@@ -45,7 +45,8 @@ class ForbiddenError extends APIError {
   }
 }
 
-class AuthenticationError extends APIError {
+// Custom error untuk digunakan pada utils.mjs
+export class AuthenticationError extends APIError {
   constructor(message = "Authentication failed") {
     super(message, 401, "UNAUTHORIZED");
   }
@@ -213,12 +214,44 @@ app.delete(
   }
 );
 
+app.use((err, req, res, next) => {
+  if (err instanceof AuthenticationError) {
+    return res.status(401).json({
+      success: false,
+      error: {
+        statusCode: err.statusCode,
+        code: err.code,
+        message: err.message,
+      },
+      timestamp: new Date().toISOString,
+      pathUrl: req.originalUrl,
+    });
+  }
+  next(err);
+});
+
+// 2. Error handler untuk menangani error ketika user tidak memiliki izin
+app.use((err, req, res, next) => {
+  if (err instanceof ForbiddenError) {
+    return res.status(403).json({
+      success: false,
+      error: {
+        statusCode: err.statusCode,
+        code: err.code,
+        message: err.message,
+      },
+      timestamp: new Date().toISOString(),
+      pathUrl: req.originalUrl,
+    });
+  }
+  next(err);
+});
 // 1. Error handler unutuk menangani error tidak menemukan whisper
 app.use((err, req, res, next) => {
   if (err instanceof NotFoundError) {
     if (req.originalUrl.startsWith("/api/")) {
       return res.status(404).json({
-        succes: false,
+        success: false,
         error: {
           statusCode: err.statusCode,
           code: err.code,
@@ -233,22 +266,6 @@ app.use((err, req, res, next) => {
       title: "404 Not Found",
       message: err.message,
       statusCode: err.statusCode,
-    });
-  }
-  next(err);
-});
-
-app.use((err, req, res, next) => {
-  if (err instanceof ForbiddenError) {
-    return res.status(403).json({
-      success: false,
-      error: {
-        statusCode: err.statusCode,
-        code: err.code,
-        message: err.message,
-      },
-      timestamp: new Date().toISOString(),
-      pathUrl: req.originalUrl,
     });
   }
   next(err);
@@ -286,6 +303,22 @@ app.use((err, req, res, next) => {
     });
   }
   next(err);
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  console.error("Unhandled error:", err.message);
+
+  return res.status(500).json({
+    success: false,
+    error: {
+      statusCode: 500,
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Internal server error",
+    },
+    timestamp: new Date().toISOString(),
+    pathUrl: req.originalUrl,
+  });
 });
 
 export { app };
