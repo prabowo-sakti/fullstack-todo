@@ -6,6 +6,16 @@ dotenv.config();
 
 setupGlobalErrorHandlers();
 
+setTimeout(() => {
+  console.log("Memicu uncaughtException untuk pengujian");
+  throw new Error("Test uncaughtException error");
+}, 10000);
+
+setTimeout(() => {
+  console.log("Memicu unhandledRejection untuk pengujian");
+  Promise.reject(new Error("Test unhandledRejection error"));
+}, 15000);
+
 const port = process.env.PORT;
 try {
   await mongoose.connect(process.env.MONGODB_URI);
